@@ -2,9 +2,9 @@ upnp-mediarenderer-client
 =========================
 ### An UPnP/DLNA MediaRenderer client
 
-This modules allows you to control an UPnP/DLNA MediaRenderer directly (usually your TV set). It implements load, play, pause, stop and seek commands.
+This module allows you to control an UPnP/DLNA MediaRenderer directly (usually your TV set). It implements load, play, pause, stop and seek commands.
 
-UPnP/DLNA being a hell of a complicated and poorly implemented protocol, this will probably not work everywhere as is. If it doesn't and you wish to invest time in it, please post an issue and prepare your debugging belt !
+UPnP/DLNA being a hell of a complicated and poorly implemented protocol, this will probably not work everywhere as it is. If it doesn't and you wish to invest time in it, please post an issue and prepare your debugging belt !
 
 Installation
 ------------
