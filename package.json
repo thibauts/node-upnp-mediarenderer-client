@@ -1,0 +1,24 @@
+{
+  "name": "upnp-mediarenderer-client",
+  "version": "0.0.1",
+  "description": "An UPnP/DLNA MediaRenderer client",
+  "author": "thibauts",
+  "license": "MIT",
+  "main": "index.js",
+  "dependencies": {
+    "upnp-device-client": "~0.0.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/thibauts/node-upnp-mediarenderer-client.git"
+  },
+  "keywords": [
+    "upnp",
+    "dlna",
+    "mediarenderer",
+    "tv"
+  ]
+}
