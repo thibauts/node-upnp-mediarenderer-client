@@ -81,7 +81,6 @@ MediaRendererClient.prototype.seek = function(seconds, callback) {
     Unit: 'REL_TIME',
     Target: formatTime(seconds)
   };
-  console.log(params);
   this.callAction('AVTransport', 'Seek', params, callback || noop);
 };
 
