@@ -1,6 +1,6 @@
 {
   "name": "upnp-mediarenderer-client",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An UPnP/DLNA MediaRenderer client",
   "author": "thibauts",
   "license": "MIT",
