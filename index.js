@@ -8,6 +8,29 @@ function MediaRendererClient(url) {
 
 util.inherits(MediaRendererClient, DeviceClient);
 
+MediaRendererClient.prototype.getSupportedProtocols = function(callback) {
+  this.callAction('ConnectionManager', 'GetProtocolInfo', {}, function(err, result) {
+    if(err) return callback(err);
+    
+    //
+    // Here we leave off the `Source` field as we're hopefuly dealing with a Sink-only device.
+    //
+    var lines = result.Sink.split(',');
+
+    var protocols = lines.map(function(line) {
+      var tmp = line.split(':');
+      return {
+        protocol: tmp[0],
+        network: tmp[1],
+        contentFormat: tmp[2],
+        additionalInfo: tmp[3]
+      };
+    });
+
+    callback(null, protocols);
+  });
+};
+
 MediaRendererClient.prototype.load = function(url, options, callback) {
   var self = this;
   if(typeof options === 'function') {
