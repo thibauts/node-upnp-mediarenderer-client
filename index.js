@@ -40,6 +40,8 @@ MediaRendererClient.prototype.load = function(url, options, callback) {
 
   var contentType = options.contentType || 'video/mpeg'; // Default to something generic
 
+  var metadata = options.metadata || null;
+
   var params = {
     RemoteProtocolInfo: 'http-get:*:' + contentType + ':*',
     PeerConnectionManager: null,
@@ -62,7 +64,7 @@ MediaRendererClient.prototype.load = function(url, options, callback) {
     var params = {
       InstanceID: self.instanceId,
       CurrentURI: url,
-      CurrentURIMetaData: null
+      CurrentURIMetaData: metadata
     };
 
     self.callAction('AVTransport', 'SetAVTransportURI', params, function(err) {
