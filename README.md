@@ -40,8 +40,6 @@ client.stop();
 // Seek to 10 minutes
 client.seek(10 * 60);
 
-// Events
-
 client.on('status', function(status) {
   // Reports the full state of the AVTransport service the first time it fires,
   // then reports diffs. Can be used to maintain a reliable copy of the
