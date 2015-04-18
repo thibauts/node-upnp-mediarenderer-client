@@ -1,12 +1,13 @@
 {
   "name": "upnp-mediarenderer-client",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "An UPnP/DLNA MediaRenderer client",
   "author": "thibauts",
   "license": "MIT",
   "main": "index.js",
   "dependencies": {
-    "upnp-device-client": "~0.0.7"
+    "debug": "^2.1.3",
+    "upnp-device-client": "^1.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

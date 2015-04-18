@@ -1,12 +1,77 @@
 var DeviceClient = require('upnp-device-client');
 var util = require('util');
+var debug = require('debug')('upnp-mediarenderer-client');
+
+var MEDIA_EVENTS = [
+  'status',
+  'loading',
+  'playing',
+  'paused',
+  'stopped',
+  'speedChanged'
+];
 
 function MediaRendererClient(url) {
   DeviceClient.call(this, url);
   this.instanceId = 0;
+
+  // Subscribe / unsubscribe from AVTransport depending
+  // on relevant registered / removed event listeners.
+  var self = this;
+  var refs = 0;
+  var receivedState;
+
+  this.addListener('newListener', function(eventName, listener) {
+    if(MEDIA_EVENTS.indexOf(eventName) === -1) return;
+    if(refs === 0) {
+      receivedState = false;
+      self.subscribe('AVTransport', onstatus);
+    }
+    refs++;
+  });
+
+  this.addListener('removeListener', function(eventName, listener) {
+    if(MEDIA_EVENTS.indexOf(eventName) === -1) return;
+    refs--;
+    if(refs === 0) self.unsubscribe('AVTransport', onstatus);
+  });
+
+  function onstatus(e) {
+    self.emit('status', e);
+
+    if(!receivedState) {
+      // Starting from here we only want state updates.
+      // As the first received event is the full service state, we ignore it.
+      receivedState = true;
+      return;
+    }
+
+    if(e.hasOwnProperty('TransportState')) {
+      switch(e.TransportState) {
+        case 'TRANSITIONING':
+          self.emit('loading');
+          break;
+        case 'PLAYING':
+          self.emit('playing');
+          break;
+        case 'PAUSED_PLAYBACK':
+          self.emit('paused');
+          break;
+        case 'STOPPED':
+          self.emit('stopped');
+          break;
+      }
+    }
+
+    if(e.hasOwnProperty('TransportPlaySpeed')) {
+      self.emit('speedChanged', Number(e.TransportPlaySpeed));
+    }
+  }
+
 }
 
 util.inherits(MediaRendererClient, DeviceClient);
+
 
 MediaRendererClient.prototype.getSupportedProtocols = function(callback) {
   this.callAction('ConnectionManager', 'GetProtocolInfo', {}, function(err, result) {
@@ -31,12 +96,14 @@ MediaRendererClient.prototype.getSupportedProtocols = function(callback) {
   });
 };
 
+
 MediaRendererClient.prototype.load = function(url, options, callback) {
   var self = this;
   if(typeof options === 'function') {
     callback = options;
     options = {};
   }
+
 
   var contentType = options.contentType || 'video/mpeg'; // Default to something generic
 
@@ -78,6 +145,7 @@ MediaRendererClient.prototype.load = function(url, options, callback) {
   });
 };
 
+
 MediaRendererClient.prototype.play = function(callback) {
   var params = {
     InstanceID: this.instanceId,
@@ -86,6 +154,7 @@ MediaRendererClient.prototype.play = function(callback) {
   this.callAction('AVTransport', 'Play', params, callback || noop);
 };
 
+
 MediaRendererClient.prototype.pause = function(callback) {
   var params = {
     InstanceID: this.instanceId
@@ -93,12 +162,14 @@ MediaRendererClient.prototype.pause = function(callback) {
   this.callAction('AVTransport', 'Pause', params, callback || noop);
 };
 
+
 MediaRendererClient.prototype.stop = function(callback) {
   var params = {
     InstanceID: this.instanceId
   };
   this.callAction('AVTransport', 'Stop', params, callback || noop);
 };
+
 
 MediaRendererClient.prototype.seek = function(seconds, callback) {
   var params = {
@@ -125,6 +196,8 @@ function formatTime(seconds) {
   return [pad(h), pad(m), pad(s)].join(':');
 }
 
+
 function noop() {}
+
 
 module.exports = MediaRendererClient;
