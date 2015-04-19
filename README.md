@@ -4,7 +4,9 @@ upnp-mediarenderer-client
 
 This module allows you to control an UPnP/DLNA MediaRenderer directly (usually your TV set). It implements load, play, pause, stop and seek commands.
 
-Events coming from the MediaRenderer (ie. fired from the TV remote) such as `playing`, `paused`, `stopped` can be listened to, too.
+Events coming from the MediaRenderer (ie. fired from the TV remote) such as `playing`, `paused`, `stopped` can be listened to.
+
+External subtitles are supported through DIDL-Lite metadata, but be aware that some MediaRenderers require the HTTP server serving the media file to return specific headers as illustrated in this [gist](https://gist.github.com/thibauts/5f5f8d8ce6566c8289e6). Also, some MediaRenderers don't support external subtitles at all.
 
 Installation
 ------------
@@ -22,8 +24,19 @@ var MediaRendererClient = require('upnp-mediarenderer-client');
 // Instanciate a client with a device description URL (discovered by SSDP)
 var client = new MediaRendererClient('http://192.168.1.50:4873/foo.xml');
 
-// Load a stream and play it immediately
-client.load('http://url.to.some/stream.avi', { autoplay: true }, function(err, result) {
+// Load a stream with subtitles and play it immediately
+var options = { 
+  autoplay: true,
+  contentType: 'video/avi',
+  metadata: {
+    title: 'Some Movie Title',
+    creator: 'John Doe',
+    type: 'video', // can be 'video', 'audio' or 'image'
+    subtitlesUrl: 'http://url.to.some/subtitles.srt'
+  }
+};
+
+client.load('http://url.to.some/stream.avi', options, function(err, result) {
   if(err) throw err;
   console.log('playing ...');
 });

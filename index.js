@@ -1,6 +1,7 @@
 var DeviceClient = require('upnp-device-client');
 var util = require('util');
 var debug = require('debug')('upnp-mediarenderer-client');
+var et = require('elementtree');
 
 var MEDIA_EVENTS = [
   'status',
@@ -10,6 +11,7 @@ var MEDIA_EVENTS = [
   'stopped',
   'speedChanged'
 ];
+
 
 function MediaRendererClient(url) {
   DeviceClient.call(this, url);
@@ -107,7 +109,13 @@ MediaRendererClient.prototype.load = function(url, options, callback) {
 
   var contentType = options.contentType || 'video/mpeg'; // Default to something generic
 
-  var metadata = options.metadata || null;
+  var metadata = null;
+
+  if(options.metadata) {
+    metadata = typeof options.metadata === 'string'
+      ? options.metadata
+      : buildMetadata(options.metadata);
+  }
 
   var params = {
     RemoteProtocolInfo: 'http-get:*:' + contentType + ':*',
@@ -194,6 +202,60 @@ function formatTime(seconds) {
   }
 
   return [pad(h), pad(m), pad(s)].join(':');
+}
+
+
+function buildMetadata(metadata) {
+  var didl = et.Element('DIDL-Lite');
+  didl.set('xmlns', 'urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/');
+  didl.set('xmlns:dc', 'http://purl.org/dc/elements/1.1/');
+  didl.set('xmlns:upnp', 'urn:schemas-upnp-org:metadata-1-0/upnp/');
+  didl.set('xmlns:sec', 'http://www.sec.co.kr/');
+
+  var item = et.SubElement(didl, 'item');
+  item.set('id', 0);
+  item.set('parentID', -1);
+  item.set('restricted', false);
+
+  var OBJECT_CLASSES = {
+    'audio': 'object.item.audioItem.musicTrack',
+    'video': 'object.item.videoItem.movie',
+    'image': 'object.item.imageItem.photo'
+  }
+
+  if(metadata.type) {
+    var klass = et.SubElement(item, 'upnp:class');
+    klass.text = OBJECT_CLASSES[metadata.type];
+  }
+
+  if(metadata.title) {
+    var title = et.SubElement(item, 'dc:title');
+    title.text = metadata.title;
+  }
+
+  if(metadata.creator) {
+    var creator = et.SubElement(item, 'dc:creator');
+    creator.text = metadata.creator;
+  }
+
+  if(metadata.subtitlesUrl) {
+    var captionInfo = et.SubElement(item, 'sec:CaptionInfo');
+    captionInfo.set('sec:type', 'srt');
+    captionInfo.text = metadata.subtitlesUrl;
+
+    var captionInfoEx = et.SubElement(item, 'sec:CaptionInfoEx');
+    captionInfoEx.set('sec:type', 'srt');
+    captionInfoEx.text = metadata.subtitlesUrl;
+
+    var res = et.SubElement(item, 'res');
+    res.set('protocolInfo', 'http-get:*:text/srt:*');
+    res.text = metadata.subtitlesUrl;
+  }
+
+  var doc = new et.ElementTree(didl);
+  var xml = doc.write({ xml_declaration: false });
+
+  return xml;
 }
 
 
