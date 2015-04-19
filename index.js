@@ -99,6 +99,22 @@ MediaRendererClient.prototype.getSupportedProtocols = function(callback) {
 };
 
 
+MediaRendererClient.prototype.getPosition = function(callback) {
+  this.callAction('AVTransport', 'GetPositionInfo', { InstanceID: this.instanceId }, function(err, result) {
+    if(err) return callback(err);
+    callback(null, parseTime(result.AbsTime));
+  });
+};
+
+
+MediaRendererClient.prototype.getDuration = function(callback) {
+  this.callAction('AVTransport', 'GetMediaInfo', { InstanceID: this.instanceId }, function(err, result) {
+    if(err) return callback(err);
+    callback(null, parseTime(result.MediaDuration));
+  });
+};
+
+
 MediaRendererClient.prototype.load = function(url, options, callback) {
   var self = this;
   if(typeof options === 'function') {
@@ -202,6 +218,12 @@ function formatTime(seconds) {
   }
 
   return [pad(h), pad(m), pad(s)].join(':');
+}
+
+
+function parseTime(time) {
+  var parts = time.split(':').map(Number);
+  return parts[0] * 3600 + parts[1] * 60 + parts[2];
 }
 
 

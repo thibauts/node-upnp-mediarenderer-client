@@ -66,6 +66,14 @@ client.on('loading', function() {
 
 client.on('playing', function() {
   console.log('playing');
+
+  client.getPosition(function(err, position) {
+    console.log(position); // Current position in seconds
+  });
+
+  client.getDuration(function(err, duration) {
+    console.log(duration); // Media duration in seconds
+  });
 });
 
 client.on('paused', function() {
