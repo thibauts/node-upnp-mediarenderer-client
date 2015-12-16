@@ -276,6 +276,9 @@ function buildMetadata(metadata) {
     //res.text = metadata.subtitlesUrl;
 
   }
+  
+  var res = et.SubElement(item, 'res');
+  res.set('protocolInfo', 'http-get:*:video/mpeg:*');
 
   var doc = new et.ElementTree(didl);
   var xml = doc.write({ xml_declaration: false });
