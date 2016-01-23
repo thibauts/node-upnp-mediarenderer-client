@@ -25,14 +25,17 @@ var MediaRendererClient = require('upnp-mediarenderer-client');
 var client = new MediaRendererClient('http://192.168.1.50:4873/foo.xml');
 
 // Load a stream with subtitles and play it immediately
-var options = { 
+var options = {
   autoplay: true,
-  contentType: 'video/avi',
+  contentType: 'video/mp4',
   metadata: {
     title: 'Some Movie Title',
     creator: 'John Doe',
     type: 'video', // can be 'video', 'audio' or 'image'
-    subtitlesUrl: 'http://url.to.some/subtitles.srt'
+    subtitlesUrl: 'http://url.to.some/subtitles.srt',
+
+    /* Optional for LG TVs protocol have to be specified explicit */
+    protocolInfo : 'http-get:*:video/mp4:DLNA.ORG_PN=AVC_MP4_BL_CIF15_AAC_520;'
   }
 };
 
