@@ -269,11 +269,11 @@ function buildMetadata(metadata) {
     captionInfoEx.set('sec:type', 'srt');
     captionInfoEx.text = metadata.subtitlesUrl;
 
-    // WARNING: makes some TVs which don't have it
+    // Commented-out for now as it makes some TVs which don't have it
     // in their supported protocols choke.
-    var res = et.SubElement(item, 'res');
-    res.set('protocolInfo', 'http-get:*:text/srt:*');
-    res.text = metadata.subtitlesUrl;
+    //var res = et.SubElement(item, 'res');
+    //res.set('protocolInfo', 'http-get:*:text/srt:*');
+    //res.text = metadata.subtitlesUrl;
 
   }
 
