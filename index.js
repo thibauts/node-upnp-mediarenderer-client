@@ -78,7 +78,7 @@ util.inherits(MediaRendererClient, DeviceClient);
 MediaRendererClient.prototype.getSupportedProtocols = function(callback) {
   this.callAction('ConnectionManager', 'GetProtocolInfo', {}, function(err, result) {
     if(err) return callback(err);
-    
+
     //
     // Here we leave off the `Source` field as we're hopefuly dealing with a Sink-only device.
     //
@@ -127,7 +127,7 @@ MediaRendererClient.prototype.load = function(url, options, callback) {
 
   var metadata = null;
 
-  if(options.metadata) {
+  if(options.metadata && (options.metadata.url = url)) {
     metadata = typeof options.metadata === 'string'
       ? options.metadata
       : buildMetadata(options.metadata);
@@ -149,7 +149,7 @@ MediaRendererClient.prototype.load = function(url, options, callback) {
       // If PrepareForConnection is not implemented, we keep the default (0) InstanceID
       //
     } else {
-      self.instanceId = result.AVTransportID;    
+      self.instanceId = result.AVTransportID;
     }
 
     var params = {
@@ -209,7 +209,7 @@ function formatTime(seconds) {
   var h = 0;
   var m = 0;
   var s = 0;
-  h = Math.floor((seconds - (h * 0)    - (m * 0 )) / 3600); 
+  h = Math.floor((seconds - (h * 0)    - (m * 0 )) / 3600);
   m = Math.floor((seconds - (h * 3600) - (m * 0 )) / 60);
   s =            (seconds - (h * 3600) - (m * 60));
 
@@ -275,6 +275,12 @@ function buildMetadata(metadata) {
     //res.set('protocolInfo', 'http-get:*:text/srt:*');
     //res.text = metadata.subtitlesUrl;
 
+  }
+
+  if(metadata.protocolInfo) {
+    var res = et.SubElement(item, 'res');
+    res.set('protocolInfo', metadata.protocolInfo);
+    res.text = metadata.url;
   }
 
   var doc = new et.ElementTree(didl);
