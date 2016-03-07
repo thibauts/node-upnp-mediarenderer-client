@@ -122,19 +122,15 @@ MediaRendererClient.prototype.load = function(url, options, callback) {
     options = {};
   }
 
-
   var contentType = options.contentType || 'video/mpeg'; // Default to something generic
+  var protocolInfo = 'http-get:*:' + contentType + ':*';
 
-  var metadata = null;
-
-  if(options.metadata) {
-    metadata = typeof options.metadata === 'string'
-      ? options.metadata
-      : buildMetadata(options.metadata);
-  }
+  var metadata = options.metadata || {};
+  metadata.url = url;
+  metadata.protocolInfo = protocolInfo;
 
   var params = {
-    RemoteProtocolInfo: 'http-get:*:' + contentType + ':*',
+    RemoteProtocolInfo: protocolInfo,
     PeerConnectionManager: null,
     PeerConnectionID: -1,
     Direction: 'Input'
@@ -155,7 +151,7 @@ MediaRendererClient.prototype.load = function(url, options, callback) {
     var params = {
       InstanceID: self.instanceId,
       CurrentURI: url,
-      CurrentURIMetaData: metadata
+      CurrentURIMetaData: buildMetadata(metadata)
     };
 
     self.callAction('AVTransport', 'SetAVTransportURI', params, function(err) {
@@ -260,6 +256,12 @@ function buildMetadata(metadata) {
     creator.text = metadata.creator;
   }
 
+  if(metadata.url && metadata.protocolInfo) {
+    var res = et.SubElement(item, 'res');
+    res.set('protocolInfo', metadata.protocolInfo);
+    res.text = metadata.url;
+  }
+
   if(metadata.subtitlesUrl) {
     var captionInfo = et.SubElement(item, 'sec:CaptionInfo');
     captionInfo.set('sec:type', 'srt');
@@ -269,12 +271,10 @@ function buildMetadata(metadata) {
     captionInfoEx.set('sec:type', 'srt');
     captionInfoEx.text = metadata.subtitlesUrl;
 
-    // Commented-out for now as it makes some TVs which don't have it
-    // in their supported protocols choke.
-    //var res = et.SubElement(item, 'res');
-    //res.set('protocolInfo', 'http-get:*:text/srt:*');
-    //res.text = metadata.subtitlesUrl;
-
+    // Create a second `res` for the subtitles
+    var res = et.SubElement(item, 'res');
+    res.set('protocolInfo', 'http-get:*:text/srt:*');
+    res.text = metadata.subtitlesUrl;
   }
 
   var doc = new et.ElementTree(didl);
