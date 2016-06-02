@@ -102,8 +102,12 @@ MediaRendererClient.prototype.getSupportedProtocols = function(callback) {
 MediaRendererClient.prototype.getPosition = function(callback) {
   this.callAction('AVTransport', 'GetPositionInfo', { InstanceID: this.instanceId }, function(err, result) {
     if(err) return callback(err);
-    if (result.AbsTime != 'NOT_IMPLEMENTED') return callback(null, parseTime(result.AbsTime));
-    callback(null, parseTime(result.RelTime));
+
+    var str = result.AbsTime !== 'NOT_IMPLEMENTED'
+      ? result.AbsTime
+      : result.RelTime;
+
+    callback(null, parseTime(str));
   });
 };
 
