@@ -206,6 +206,24 @@ MediaRendererClient.prototype.seek = function(seconds, callback) {
 };
 
 
+MediaRendererClient.prototype.getVolume = function(callback) {
+  this.callAction('RenderingControl', 'GetVolume', { InstanceID: this.instanceId,Channel: 'Master'}, function(err, result) {
+    if(err) return callback(err);
+    callback(null, parseInt(result.CurrentVolume));
+  });
+};
+
+
+MediaRendererClient.prototype.setVolume = function(volume, callback) {
+  var params = {
+    InstanceID: this.instanceId,
+    Channel: 'Master',
+    DesiredVolume: volume
+  };
+  this.callAction('RenderingControl', 'SetVolume', params, callback || noop);
+};
+
+
 function formatTime(seconds) {
   var h = 0;
   var m = 0;
