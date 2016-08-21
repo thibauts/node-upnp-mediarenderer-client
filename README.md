@@ -56,11 +56,11 @@ client.seek(10 * 60);
 // Get the volume
 client.getVolume(function(err, volume) {
   if(err) throw err;
-  console.log(volume);
+  console.log(volume); // the volume range is 0-100
 });
 
 // Set the volume
-client.setVolume(volume, function(err) {
+client.setVolume(40, function(err) {
   if(err) throw err;
   console.log("volume is now", volume);
 });
