@@ -127,9 +127,9 @@ MediaRendererClient.prototype.load = function(url, options, callback) {
     options = {};
   }
 
-  var dlnaFlags = options.dlnaFlags || ':*';
+  var dlnaFeatures = options.dlnaFeatures || '*';
   var contentType = options.contentType || 'video/mpeg'; // Default to something generic
-  var protocolInfo = 'http-get:*:' + contentType + dlnaFlags;
+  var protocolInfo = 'http-get:*:' + contentType + ':' + dlnaFeatures;
 
   var metadata = options.metadata || {};
   metadata.url = url;
