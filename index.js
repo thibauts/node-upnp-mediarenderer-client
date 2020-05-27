@@ -127,8 +127,9 @@ MediaRendererClient.prototype.load = function(url, options, callback) {
     options = {};
   }
 
+  var dlnaFeatures = options.dlnaFeatures || '*';
   var contentType = options.contentType || 'video/mpeg'; // Default to something generic
-  var protocolInfo = 'http-get:*:' + contentType + ':*';
+  var protocolInfo = 'http-get:*:' + contentType + ':' + dlnaFeatures;
 
   var metadata = options.metadata || {};
   metadata.url = url;
@@ -223,6 +224,9 @@ MediaRendererClient.prototype.setVolume = function(volume, callback) {
   this.callAction('RenderingControl', 'SetVolume', params, callback || noop);
 };
 
+MediaRendererClient.prototype.getTransportInfo = function(callback) {
+  this.callAction('AVTransport', 'GetTransportInfo', { InstanceID: this.instanceId }, callback)
+}
 
 function formatTime(seconds) {
   var h = 0;
