@@ -53,6 +53,18 @@ client.stop();
 // Seek to 10 minutes
 client.seek(10 * 60);
 
+// Get the volume
+client.getVolume(function(err, volume) {
+  if(err) throw err;
+  console.log(volume); // the volume range is 0-100
+});
+
+// Set the volume
+client.setVolume(40, function(err) {
+  if(err) throw err;
+  console.log("volume is now", volume);
+});
+
 client.on('status', function(status) {
   // Reports the full state of the AVTransport service the first time it fires,
   // then reports diffs. Can be used to maintain a reliable copy of the
