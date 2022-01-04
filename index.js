@@ -78,7 +78,7 @@ util.inherits(MediaRendererClient, DeviceClient);
 MediaRendererClient.prototype.getSupportedProtocols = function(callback) {
   this.callAction('ConnectionManager', 'GetProtocolInfo', {}, function(err, result) {
     if(err) return callback(err);
-    
+
     //
     // Here we leave off the `Source` field as we're hopefuly dealing with a Sink-only device.
     //
@@ -144,14 +144,14 @@ MediaRendererClient.prototype.load = function(url, options, callback) {
 
   this.callAction('ConnectionManager', 'PrepareForConnection', params, function(err, result) {
     if(err) {
-      if(err.code !== 'ENOACTION') {
+      if( ! ['ENOACTION', 'EUPNP'].includes(err.code)) {
         return callback(err);
       }
       //
       // If PrepareForConnection is not implemented, we keep the default (0) InstanceID
       //
     } else {
-      self.instanceId = result.AVTransportID;    
+      self.instanceId = result.AVTransportID;
     }
 
     var params = {
